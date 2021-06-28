@@ -117,7 +117,7 @@ void enqueue(Queue *queue, void *node) {
 	addHead(queue, node);
 }
 
-void* dequeue(Queue *queue) {
+void* dequeue(Queue* queue) {
 	Node* tmp = queue->head;
 	void* data;
 	if (queue->head == NULL) {
@@ -134,7 +134,7 @@ void* dequeue(Queue *queue) {
 		tmp = tmp->next;
 		queue->tail->next = NULL;
 		data = tmp->data;
-		free(data);
+		free(tmp);
 	}
 	return data;
 }
@@ -163,30 +163,18 @@ int main() {
 
 
 	displayLinkedList(linkedlist, (DISPLAY)displayEmployee);
-
-	Employee* samuel2 = (Employee*)malloc(sizeof(Employee));
-	strcpy(samuel2->name, "Samuel");
-	samuel2->age = 22;
-	
-	Employee* sally2 = (Employee*)malloc(sizeof(Employee));
-	strcpy(sally2->name, "Sally");
-	sally2->age = 24;
-	
-	Employee* susan2 = (Employee*)malloc(sizeof(Employee));
-	strcpy(susan2->name, "Susan");
-	susan2->age = 44;
 	
 	Node* node = getNode(linkedlist, (int (*)(void*, void*))compareEmployee, susan);
 	deleteNode(linkedlist, node);
 
 	displayLinkedList(linkedlist, (DISPLAY)displayEmployee);
-
+	
 	Queue *queue = (Queue*)malloc(sizeof(Queue));
 	initializeQueue(queue);
 
-	enqueue(queue, samuel2);
-	enqueue(queue, sally2);
-	enqueue(queue, susan2);
+	enqueue(queue, samuel);
+	enqueue(queue, sally);
+	enqueue(queue, susan);
 
 
 	void* data = dequeue(queue);
