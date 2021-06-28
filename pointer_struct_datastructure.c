@@ -34,7 +34,7 @@ typedef struct _linkedList {
 void initializeList(LinkedList*);
 void addHead(LinkedList*, void*);
 void addTail(LinkedList*, void*);
-void delete(LinkedList*, Node*);
+void deleteNode(LinkedList*, Node*);
 Node* getNode(LinkedList*, COMPARE, void*);
 void displayLinkedList(LinkedList*, DISPLAY);
 
@@ -79,7 +79,7 @@ Node* getNode(LinkedList* list, COMPARE compare, void* data) {
 	return NULL;
 }
 
-void delete(LinkedList* list, Node* node) {
+void deleteNode(LinkedList* list, Node* node) {
 	if (node == list->head) {
 		if (list->head->next == NULL) {
 			list->head = list->tail = NULL;
@@ -107,6 +107,38 @@ void displayLinkedList(LinkedList* list, DISPLAY display) {
 	}
 }
 
+typedef LinkedList Queue;
+
+void initializeQueue (Queue* queue) {
+	initializeList(queue);
+}
+
+void enqueue(Queue *queue, void *node) {
+	addHead(queue, node);
+}
+
+void* dequeue(Queue *queue) {
+	Node* tmp = queue->head;
+	void* data;
+	if (queue->head == NULL) {
+		data = NULL;
+	} else if (queue->head == queue->tail) {
+		queue->head = queue->tail = NULL;
+		data = tmp->data;
+		free(tmp);
+	} else {
+		while(tmp->next != queue->tail){
+			tmp = tmp->next;
+		}
+		queue->tail = tmp;
+		tmp = tmp->next;
+		queue->tail->next = NULL;
+		data = tmp->data;
+		free(data);
+	}
+	return data;
+}
+
 
 int main() {
 	LinkedList* linkedlist = (LinkedList*)malloc(sizeof(LinkedList));
@@ -132,10 +164,37 @@ int main() {
 
 	displayLinkedList(linkedlist, (DISPLAY)displayEmployee);
 
+	Employee* samuel2 = (Employee*)malloc(sizeof(Employee));
+	strcpy(samuel2->name, "Samuel");
+	samuel2->age = 22;
+	
+	Employee* sally2 = (Employee*)malloc(sizeof(Employee));
+	strcpy(sally2->name, "Sally");
+	sally2->age = 24;
+	
+	Employee* susan2 = (Employee*)malloc(sizeof(Employee));
+	strcpy(susan2->name, "Susan");
+	susan2->age = 44;
+	
 	Node* node = getNode(linkedlist, (int (*)(void*, void*))compareEmployee, susan);
-	delete(linkedlist, node);
+	deleteNode(linkedlist, node);
 
 	displayLinkedList(linkedlist, (DISPLAY)displayEmployee);
-	
+
+	Queue *queue = (Queue*)malloc(sizeof(Queue));
+	initializeQueue(queue);
+
+	enqueue(queue, samuel2);
+	enqueue(queue, sally2);
+	enqueue(queue, susan2);
+
+
+	void* data = dequeue(queue);
+	printf("Dequeued %s\n", ((Employee*)data)->name);
+	data = dequeue(queue);
+	printf("Dequeued %s\n", ((Employee*)data)->name);
+	data = dequeue(queue);
+	printf("Dequeued %s\n", ((Employee*)data)->name);	
+
 	return 0;
 }
