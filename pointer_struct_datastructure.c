@@ -139,6 +139,97 @@ void* dequeue(Queue* queue) {
 	return data;
 }
 
+typedef LinkedList Stack;
+void initializeStack(Stack*);
+
+void initializeStack(Stack* stack){
+	initializeList(stack);
+}
+
+void push(Stack* stack, void* data){
+	addHead(stack, data);
+}
+
+void* pop(Stack* stack){
+	Node* node = stack->head;
+	if(node == NULL) {
+		return NULL;
+	} else if (node == stack->tail) {
+		stack->head = stack->tail = NULL;
+		void* data = node->data;
+		free(node);
+		return data;
+	} else {
+		stack->head = stack->head->next;
+		void* data = node->data;
+		free(node);
+		return data;
+	}
+}
+
+
+typedef struct _tree {
+	void* data;
+	struct _tree* left;
+	struct _tree* right;
+
+} TreeNode;
+
+void insertNode(TreeNode** realRoot, COMPARE compare, void* data){
+	TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+	node->data = data;
+	node->left = NULL;
+	node->right = NULL;
+
+	TreeNode* root = *realRoot;
+
+	if(root == NULL) {
+		*realRoot = node;
+		return;
+	}
+
+	while(1){
+		if(compare((root)->data, data) > 0) {
+			if ((root)->left != NULL) {
+				root = root->left;
+			} else {
+				root->left = node;
+				break;
+			}
+		} else {
+			if ((root)->right != NULL) {
+				root = root->right;
+			} else {
+				root->right = node;
+				break;
+			}
+		}
+	}
+}
+
+void inOrder(TreeNode* root, DISPLAY display){
+	if(root != NULL) {
+		inOrder(root->left, display);
+		display(root->data);
+		inOrder(root->right, display);
+	}
+}
+
+void postOrder(TreeNode* root, DISPLAY display){
+	if (root != NULL) {
+		postOrder(root->left, display);
+		postOrder(root->right, display);
+		display(root->data);
+	}
+}
+
+void preOrder(TreeNode* root, DISPLAY display) {
+	if (root != NULL) {
+		display(root->data);
+		preOrder(root->left, display);
+		preOrder(root->right, display);
+	}
+}
 
 int main() {
 	LinkedList* linkedlist = (LinkedList*)malloc(sizeof(LinkedList));
@@ -183,6 +274,32 @@ int main() {
 	printf("Dequeued %s\n", ((Employee*)data)->name);
 	data = dequeue(queue);
 	printf("Dequeued %s\n", ((Employee*)data)->name);	
+
+	Stack* stack = (Stack*)malloc(sizeof(stack));
+	initializeStack(stack);
+
+	push(stack, samuel);
+	push(stack, sally);
+	push(stack, susan);
+
+	Employee* employee;
+
+	for(int i=0; i<4; i++){
+		employee = (Employee*)pop(stack);
+		printf("Popped %s\n", employee->name);
+	}
+
+
+	TreeNode* tree = NULL;
+
+	insertNode(&tree, (COMPARE)compareEmployee, samuel);
+	insertNode(&tree, (COMPARE)compareEmployee, sally);
+	insertNode(&tree, (COMPARE)compareEmployee, susan);
+
+	preOrder(tree, (DISPLAY)displayEmployee);
+	inOrder(tree, (DISPLAY)displayEmployee);
+	postOrder(tree, (DISPLAY)displayEmployee);
+
 
 	return 0;
 }
